@@ -1,0 +1,18 @@
+spring:
+  application.name: lambda-auth
+  mvc.formcontent.filter.enabled: false
+  datasource:
+    url: ${LAMBDA_AUTH_DB_URL:jdbc:postgresql://localhost:5432/lambda_auth}
+    username: ${LAMBDA_AUTH_DB_USER:lambda_auth}
+    password: ${LAMBDA_AUTH_DB_PASSWORD:lambda_auth}
+  jpa:
+    hibernate.ddl-auto: validate
+    open-in-view: false
+    properties.hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+
+server.port: ${LAMBDA_AUTH_PORT:8081}
+
+logging.level:
+  com.microchip.lambda_auth: INFO
