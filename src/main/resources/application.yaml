@@ -23,5 +23,9 @@ lambda.auth.jwt:
 lambda.auth.session:
   refresh-ttl: ${LAMBDA_AUTH_REFRESH_TTL:30d}
 
+lambda.auth.admin:
+  username: ${LAMBDA_AUTH_ADMIN_USERNAME:}
+  password: ${LAMBDA_AUTH_ADMIN_PASSWORD:}
+
 logging.level:
   com.microchip.lambda_auth: INFO
