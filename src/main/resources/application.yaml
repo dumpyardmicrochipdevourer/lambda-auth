@@ -20,5 +20,8 @@ lambda.auth.jwt:
   key-id: ${LAMBDA_AUTH_JWT_KEY_ID:lambda-auth-1}
   access-ttl: ${LAMBDA_AUTH_JWT_ACCESS_TTL:10m}
 
+lambda.auth.session:
+  refresh-ttl: ${LAMBDA_AUTH_REFRESH_TTL:30d}
+
 logging.level:
   com.microchip.lambda_auth: INFO
