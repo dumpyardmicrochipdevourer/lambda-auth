@@ -48,7 +48,7 @@ public class AuthService {
         if (user == null || !matches || !user.isEnabled()) {
             throw new InvalidCredentialsException();
         }
-        return issue(user);
+        return issueTokens(user);
     }
 
     @Transactional(noRollbackFor = InvalidRefreshTokenException.class)
@@ -69,7 +69,7 @@ public class AuthService {
         User user = userRepository.findById(stored.getUserId())
                 .filter(User::isEnabled)
                 .orElseThrow(InvalidRefreshTokenException::new);
-        return issue(user);
+        return issueTokens(user);
     }
 
     @Transactional
@@ -77,7 +77,8 @@ public class AuthService {
         refreshTokenRepository.revoke(tokenGenerator.hash(refreshToken), Instant.now());
     }
 
-    private TokenResponse issue(User user) {
+    @Transactional
+    public TokenResponse issueTokens(User user) {
         String refreshToken = tokenGenerator.generate();
         Instant expiresAt = Instant.now().plus(sessionProperties.refreshTtl());
         refreshTokenRepository.save(new RefreshToken(user.getId(), tokenGenerator.hash(refreshToken), expiresAt));

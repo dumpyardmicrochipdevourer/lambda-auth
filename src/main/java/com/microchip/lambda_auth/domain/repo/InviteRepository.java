@@ -15,6 +15,8 @@ public interface InviteRepository extends JpaRepository<Invite, UUID> {
 
     Optional<Invite> findByCode(String code);
 
+    boolean existsByCodeAndUsedAtIsNullAndExpiresAtAfter(String code, Instant now);
+
     List<Invite> findByCreatedByOrderByCreatedAtDesc(UUID createdBy);
 
     @Modifying

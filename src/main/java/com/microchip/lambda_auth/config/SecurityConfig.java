@@ -23,7 +23,8 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/.well-known/jwks.json").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh", "/api/auth/logout")
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/auth/login", "/api/auth/refresh", "/api/auth/logout", "/api/auth/register")
                         .permitAll()
                         .anyRequest().authenticated())
                 .build();
