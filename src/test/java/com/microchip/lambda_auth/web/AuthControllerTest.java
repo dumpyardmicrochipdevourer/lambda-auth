@@ -120,6 +120,72 @@ class AuthControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.keys[0].kid").value("lambda-auth-1"));
     }
 
+    @Test
+    void meReturnsCurrentUser() throws Exception {
+        User user = user();
+        String access = JsonPath.read(login(user.getUsername(), "secret"), "$.accessToken");
+
+        mvc.perform(get("/api/auth/me").header("Authorization", "Bearer " + access))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(user.getUsername()))
+                .andExpect(jsonPath("$.role").value("USER"))
+                .andExpect(jsonPath("$.passwordHash").doesNotExist());
+    }
+
+    @Test
+    void changePasswordRevokesOldSessionsAndAcceptsNewPassword() throws Exception {
+        User user = user();
+        String body = login(user.getUsername(), "secret");
+        String access = JsonPath.read(body, "$.accessToken");
+        String oldRefresh = "{\"refreshToken\":\"%s\"}".formatted(JsonPath.<String>read(body, "$.refreshToken"));
+
+        mvc.perform(post("/api/auth/password").header("Authorization", "Bearer " + access)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"currentPassword\":\"secret\",\"newPassword\":\"correct horse\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.refreshToken").isNotEmpty());
+
+        mvc.perform(post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON).content(oldRefresh))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"%s\",\"password\":\"correct horse\"}".formatted(user.getUsername())))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void changePasswordWithWrongCurrentIs401() throws Exception {
+        User user = user();
+        String access = JsonPath.read(login(user.getUsername(), "secret"), "$.accessToken");
+
+        mvc.perform(post("/api/auth/password").header("Authorization", "Bearer " + access)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"currentPassword\":\"nope\",\"newPassword\":\"correct horse\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void changePasswordToWeakIs400() throws Exception {
+        User user = user();
+        String access = JsonPath.read(login(user.getUsername(), "secret"), "$.accessToken");
+
+        mvc.perform(post("/api/auth/password").header("Authorization", "Bearer " + access)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"currentPassword\":\"secret\",\"newPassword\":\"short\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void healthIsPublic() throws Exception {
+        mvc.perform(get("/actuator/health")).andExpect(status().isOk());
+    }
+
+    private String login(String username, String password) throws Exception {
+        return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"%s\",\"password\":\"%s\"}".formatted(username, password)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+    }
+
     private User user() {
         return users.save(new User(name(), encoder.encode("secret"), Role.USER));
     }

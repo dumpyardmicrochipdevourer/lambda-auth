@@ -14,6 +14,10 @@ spring:
 
 server.port: ${LAMBDA_AUTH_PORT:8081}
 
+management:
+  endpoints.web.exposure.include: health
+  endpoint.health.probes.enabled: true
+
 lambda.auth.jwt:
   private-key-path: ${LAMBDA_AUTH_JWT_KEY}
   issuer: ${LAMBDA_AUTH_JWT_ISSUER:http://localhost:8081}

@@ -8,8 +8,10 @@ import com.microchip.lambda_auth.domain.repo.RefreshTokenRepository;
 import com.microchip.lambda_auth.domain.repo.UserRepository;
 import com.microchip.lambda_auth.service.exceptions.InvalidCredentialsException;
 import com.microchip.lambda_auth.service.exceptions.InvalidRefreshTokenException;
+import com.microchip.lambda_auth.service.util.CredentialsValidator;
 import com.microchip.lambda_auth.service.util.RefreshTokenGenerator;
 import java.time.Instant;
+import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final SessionProperties sessionProperties;
+    private final CredentialsValidator validator;
     private final String dummyHash;
 
     public AuthService(
@@ -31,13 +34,15 @@ public class AuthService {
             RefreshTokenGenerator tokenGenerator,
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
-            SessionProperties sessionProperties) {
+            SessionProperties sessionProperties,
+            CredentialsValidator validator) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.tokenGenerator = tokenGenerator;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.sessionProperties = sessionProperties;
+        this.validator = validator;
         this.dummyHash = passwordEncoder.encode("dummy");
     }
 
@@ -75,6 +80,19 @@ public class AuthService {
     @Transactional
     public void logout(String refreshToken) {
         refreshTokenRepository.revoke(tokenGenerator.hash(refreshToken), Instant.now());
+    }
+
+    @Transactional
+    public TokenResponse changePassword(UUID userId, String currentPassword, String newPassword) {
+        User user = userRepository.findById(userId).filter(User::isEnabled)
+                .orElseThrow(InvalidCredentialsException::new);
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new InvalidCredentialsException();
+        }
+        validator.validate(user.getUsername(), newPassword);
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        refreshTokenRepository.revokeAll(userId, Instant.now());
+        return issueTokens(user);
     }
 
     @Transactional

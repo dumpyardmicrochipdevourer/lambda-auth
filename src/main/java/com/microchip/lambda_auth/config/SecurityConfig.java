@@ -25,11 +25,11 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/.well-known/jwks.json").permitAll()
+                        .requestMatchers("/.well-known/jwks.json", "/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/auth/login", "/api/auth/refresh", "/api/auth/logout", "/api/auth/register")
                         .permitAll()
-                        .requestMatchers("/api/invites/**").hasRole("ADMIN")
+                        .requestMatchers("/api/invites/**", "/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .build();
     }
