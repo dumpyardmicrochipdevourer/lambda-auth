@@ -179,6 +179,16 @@ class AuthControllerTest extends IntegrationTest {
         mvc.perform(get("/actuator/health")).andExpect(status().isOk());
     }
 
+    @Test
+    void metricsExposeAccounts() throws Exception {
+        user();
+
+        String body = mvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertTrue(body.contains("lambda_auth_users"));
+        org.junit.jupiter.api.Assertions.assertTrue(body.contains("lambda_auth_sessions"));
+    }
+
     private String login(String username, String password) throws Exception {
         return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"%s\",\"password\":\"%s\"}".formatted(username, password)))

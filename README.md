@@ -37,6 +37,7 @@ token, 403 bad invite or not an admin, 409 username taken.
 | `LAMBDA_AUTH_DB_URL` | `jdbc:postgresql://localhost:5432/lambda_auth` | |
 | `LAMBDA_AUTH_DB_USER` / `LAMBDA_AUTH_DB_PASSWORD` | `lambda_auth` | |
 | `LAMBDA_AUTH_PORT` | `8081` | |
+| `LAMBDA_MANAGEMENT_PORT` | same as `LAMBDA_AUTH_PORT` | where `/actuator/health` and `/actuator/prometheus` are served |
 | `LAMBDA_AUTH_JWT_KEY` | — | path to an RSA private key, PKCS#8 PEM |
 | `LAMBDA_AUTH_JWT_ISSUER` | `http://localhost:8081` | must match what verifiers expect |
 | `LAMBDA_AUTH_JWT_KEY_ID` | `lambda-auth-1` | |

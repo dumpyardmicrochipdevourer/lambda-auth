@@ -13,5 +13,5 @@ USER app
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
 EXPOSE 8081
 HEALTHCHECK --interval=15s --timeout=3s --start-period=60s \
-  CMD wget -qO- http://127.0.0.1:8081/actuator/health || exit 1
+  CMD wget -qO- http://127.0.0.1:${LAMBDA_MANAGEMENT_PORT:-8081}/actuator/health || exit 1
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

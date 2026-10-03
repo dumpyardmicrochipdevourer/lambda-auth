@@ -15,7 +15,9 @@ spring:
 server.port: ${LAMBDA_AUTH_PORT:8081}
 
 management:
-  endpoints.web.exposure.include: health
+  # metrics go out on their own port so the gateway never serves them
+  server.port: ${LAMBDA_MANAGEMENT_PORT:${LAMBDA_AUTH_PORT:8081}}
+  endpoints.web.exposure.include: health,prometheus
   endpoint.health.probes.enabled: true
 
 lambda.auth.jwt:
