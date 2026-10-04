@@ -1,5 +1,6 @@
 package com.microchip.pathos_auth.service;
 
+import com.microchip.pathos_auth.config.OAuthProperties;
 import com.microchip.pathos_auth.domain.User;
 import com.microchip.pathos_auth.domain.dto.UserView;
 import com.microchip.pathos_auth.domain.repo.RefreshTokenRepository;
@@ -7,6 +8,7 @@ import com.microchip.pathos_auth.domain.repo.UserRepository;
 import com.microchip.pathos_auth.service.exceptions.UserNotFoundException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,27 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final OAuthProperties oauth;
 
-    public UserService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository) {
+    public UserService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository,
+            OAuthProperties oauth) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.oauth = oauth;
+    }
+
+    public List<String> services() {
+        return oauth.services();
+    }
+
+    @Transactional
+    public UserView setAccess(UUID id, Set<String> access) {
+        if (!oauth.services().containsAll(access)) {
+            throw new IllegalArgumentException("неизвестный сервис, есть: " + oauth.services());
+        }
+        User user = find(id);
+        user.setAccess(access);
+        return UserView.of(user);
     }
 
     public UserView get(UUID id) {

@@ -33,15 +33,27 @@ public class UserController {
         return userService.list();
     }
 
+    @GetMapping("/services")
+    public List<String> services() {
+        return userService.services();
+    }
+
     @PatchMapping("/{id}")
     public UserView update(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable UUID id,
             @RequestBody UpdateUserRequest request) {
-        if (request.enabled() == null) {
-            throw new IllegalArgumentException("enabled обязателен");
+        if (request.enabled() == null && request.access() == null) {
+            throw new IllegalArgumentException("нужен enabled или access");
         }
-        return userService.setEnabled(UUID.fromString(jwt.getSubject()), id, request.enabled());
+        UserView view = null;
+        if (request.access() != null) {
+            view = userService.setAccess(id, request.access());
+        }
+        if (request.enabled() != null) {
+            view = userService.setEnabled(UUID.fromString(jwt.getSubject()), id, request.enabled());
+        }
+        return view;
     }
 
     @ExceptionHandler(UserNotFoundException.class)
