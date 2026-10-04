@@ -1,10 +1,10 @@
 spring:
-  application.name: lambda-auth
+  application.name: pathos-auth
   mvc.formcontent.filter.enabled: false
   datasource:
-    url: ${LAMBDA_AUTH_DB_URL:jdbc:postgresql://localhost:5432/lambda_auth}
-    username: ${LAMBDA_AUTH_DB_USER:lambda_auth}
-    password: ${LAMBDA_AUTH_DB_PASSWORD:lambda_auth}
+    url: ${PATHOS_AUTH_DB_URL:jdbc:postgresql://localhost:5432/pathos_auth}
+    username: ${PATHOS_AUTH_DB_USER:pathos_auth}
+    password: ${PATHOS_AUTH_DB_PASSWORD:pathos_auth}
   jpa:
     hibernate.ddl-auto: validate
     open-in-view: false
@@ -12,26 +12,26 @@ spring:
   flyway:
     enabled: true
 
-server.port: ${LAMBDA_AUTH_PORT:8081}
+server.port: ${PATHOS_AUTH_PORT:8081}
 
 management:
   # metrics go out on their own port so the gateway never serves them
-  server.port: ${LAMBDA_MANAGEMENT_PORT:${LAMBDA_AUTH_PORT:8081}}
+  server.port: ${PATHOS_AUTH_MANAGEMENT_PORT:${PATHOS_AUTH_PORT:8081}}
   endpoints.web.exposure.include: health,prometheus
   endpoint.health.probes.enabled: true
 
-lambda.auth.jwt:
-  private-key-path: ${LAMBDA_AUTH_JWT_KEY}
-  issuer: ${LAMBDA_AUTH_JWT_ISSUER:http://localhost:8081}
-  key-id: ${LAMBDA_AUTH_JWT_KEY_ID:lambda-auth-1}
-  access-ttl: ${LAMBDA_AUTH_JWT_ACCESS_TTL:10m}
+pathos.auth.jwt:
+  private-key-path: ${PATHOS_AUTH_JWT_KEY}
+  issuer: ${PATHOS_AUTH_JWT_ISSUER:http://localhost:8081}
+  key-id: ${PATHOS_AUTH_JWT_KEY_ID:pathos-auth-1}
+  access-ttl: ${PATHOS_AUTH_JWT_ACCESS_TTL:10m}
 
-lambda.auth.session:
-  refresh-ttl: ${LAMBDA_AUTH_REFRESH_TTL:30d}
+pathos.auth.session:
+  refresh-ttl: ${PATHOS_AUTH_REFRESH_TTL:30d}
 
-lambda.auth.admin:
-  username: ${LAMBDA_AUTH_ADMIN_USERNAME:}
-  password: ${LAMBDA_AUTH_ADMIN_PASSWORD:}
+pathos.auth.admin:
+  username: ${PATHOS_AUTH_ADMIN_USERNAME:}
+  password: ${PATHOS_AUTH_ADMIN_PASSWORD:}
 
 logging.level:
-  com.microchip.lambda_auth: INFO
+  com.microchip.pathos_auth: INFO

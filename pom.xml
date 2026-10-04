@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.microchip</groupId>
-	<artifactId>lambda-auth</artifactId>
+	<artifactId>pathos-auth</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>lambda-auth</name>
-	<description>Аккаунты, сессии и выпуск токенов для lambda</description>
+	<name>pathos-auth</name>
+	<description>Аккаунты pathos: вход, сессии, токены и «войти через pathos» для сервисов</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

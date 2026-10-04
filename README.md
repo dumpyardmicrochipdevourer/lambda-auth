@@ -1,4 +1,4 @@
-# lambda-auth
+# pathos-auth
 
 Accounts, sessions and token issuing for lambda. Users sign up only by invite,
 other services verify access tokens against the public JWKS.
@@ -34,16 +34,16 @@ token, 403 bad invite or not an admin, 409 username taken.
 
 | variable | default | |
 |---|---|---|
-| `LAMBDA_AUTH_DB_URL` | `jdbc:postgresql://localhost:5432/lambda_auth` | |
-| `LAMBDA_AUTH_DB_USER` / `LAMBDA_AUTH_DB_PASSWORD` | `lambda_auth` | |
-| `LAMBDA_AUTH_PORT` | `8081` | |
-| `LAMBDA_MANAGEMENT_PORT` | same as `LAMBDA_AUTH_PORT` | where `/actuator/health` and `/actuator/prometheus` are served |
-| `LAMBDA_AUTH_JWT_KEY` | — | path to an RSA private key, PKCS#8 PEM |
-| `LAMBDA_AUTH_JWT_ISSUER` | `http://localhost:8081` | must match what verifiers expect |
-| `LAMBDA_AUTH_JWT_KEY_ID` | `lambda-auth-1` | |
-| `LAMBDA_AUTH_JWT_ACCESS_TTL` | `10m` | |
-| `LAMBDA_AUTH_REFRESH_TTL` | `30d` | |
-| `LAMBDA_AUTH_ADMIN_USERNAME` / `LAMBDA_AUTH_ADMIN_PASSWORD` | empty | first admin, created only while there is no admin |
+| `PATHOS_AUTH_DB_URL` | `jdbc:postgresql://localhost:5432/pathos_auth` | |
+| `PATHOS_AUTH_DB_USER` / `PATHOS_AUTH_DB_PASSWORD` | `pathos_auth` | |
+| `PATHOS_AUTH_PORT` | `8081` | |
+| `PATHOS_AUTH_MANAGEMENT_PORT` | same as `PATHOS_AUTH_PORT` | where `/actuator/health` and `/actuator/prometheus` are served |
+| `PATHOS_AUTH_JWT_KEY` | — | path to an RSA private key, PKCS#8 PEM |
+| `PATHOS_AUTH_JWT_ISSUER` | `http://localhost:8081` | must match what verifiers expect |
+| `PATHOS_AUTH_JWT_KEY_ID` | `pathos-auth-1` | |
+| `PATHOS_AUTH_JWT_ACCESS_TTL` | `10m` | |
+| `PATHOS_AUTH_REFRESH_TTL` | `30d` | |
+| `PATHOS_AUTH_ADMIN_USERNAME` / `PATHOS_AUTH_ADMIN_PASSWORD` | empty | first admin, created only while there is no admin |
 
 Key:
 
@@ -55,7 +55,7 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out jwt.pem
 
 ```sh
 ./mvnw test                       # needs Docker for Testcontainers
-docker build -t lambda-auth .
+docker build -t pathos-auth .
 ```
 
 The whole stack (auth, core, web, PostgreSQL) is deployed by `lambda-deploy`.

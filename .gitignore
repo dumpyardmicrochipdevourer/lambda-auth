@@ -33,5 +33,5 @@ build/
 .vscode/
 .claude/
 
-### lambda-auth ###
+### pathos-auth ###
 /data/
