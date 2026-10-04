@@ -12,7 +12,17 @@ spring:
   flyway:
     enabled: true
 
-server.port: ${PATHOS_AUTH_PORT:8081}
+server:
+  port: ${PATHOS_AUTH_PORT:8081}
+  # the sign-in page sits behind a reverse proxy: redirects and the cookie must know it is https
+  forward-headers-strategy: native
+  tomcat.remoteip.internal-proxies: ${PATHOS_AUTH_TRUSTED_PROXIES:10\\.\\d+\\.\\d+\\.\\d+|172\\.(1[6-9]|2\\d|3[01])\\.\\d+\\.\\d+|192\\.168\\.\\d+\\.\\d+|127\\.\\d+\\.\\d+\\.\\d+|30\\.0\\.0\\.\\d+}
+  servlet.session:
+    timeout: 14d
+    cookie:
+      name: PATHOS
+      http-only: true
+      same-site: lax
 
 management:
   # metrics go out on their own port so the gateway never serves them
@@ -28,6 +38,12 @@ pathos.auth.jwt:
 
 pathos.auth.session:
   refresh-ttl: ${PATHOS_AUTH_REFRESH_TTL:30d}
+
+# Services that offer "sign in with pathos", e.g.
+#   PATHOS_AUTH_OAUTH_CLIENTS_FORUM_SECRET, PATHOS_AUTH_OAUTH_CLIENTS_FORUM_REDIRECT_URIS (comma separated),
+#   PATHOS_AUTH_OAUTH_CLIENTS_FORUM_ACCESS (the name an admin ticks for an account, empty = everyone)
+pathos.auth.oauth:
+  clients: {}
 
 pathos.auth.admin:
   username: ${PATHOS_AUTH_ADMIN_USERNAME:}

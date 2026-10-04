@@ -19,6 +19,11 @@ public abstract class IntegrationTest {
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
+        registry.add("pathos.auth.oauth.clients.forum.secret", () -> "forum-secret");
+        registry.add("pathos.auth.oauth.clients.forum.redirect-uris", () -> "http://forum.test/auth/pathos/callback");
+        registry.add("pathos.auth.oauth.clients.forum.access", () -> "forum");
+        registry.add("pathos.auth.oauth.clients.open.secret", () -> "open-secret");
+        registry.add("pathos.auth.oauth.clients.open.redirect-uris", () -> "http://open.test/cb");
         registry.add("pathos.auth.jwt.private-key-path", () -> TestKeys.writePem(TestKeys.generate()).toString());
     }
 }
